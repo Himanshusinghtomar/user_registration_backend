@@ -1,31 +1,31 @@
-// Import necessary dependencies
-import dotenv from "dotenv"; // Used to load environment variables from .env file
-import connectDB from "./db/index.js"; // Import the MongoDB connection function
-import express from "express"; // Import express for creating a server
+import dotenv from 'dotenv';
+import connectDB from './db/index.js';
+import express from 'express';
+import userRouter from './routes/User.routes.js';
 
-// Load environment variables from the specified .env file
-dotenv.config({
-  path: "./env", // Path to the environment file
-});
+dotenv.config({ path: './.env' });
 
-// Create an Express app instance
 const app = express();
+app.use(express.json()); // Parse JSON bodies
 
-// Call the function to connect to MongoDB
+// Connect to MongoDB
 connectDB()
   .then(() => {
-    // This block will execute if the database connection is successful
-    const DefPort = 8000; // Default port if process.env.PORT is not defined
+    const PORT = process.env.PORT || 8000;
 
-    // Start the Express server
-    app.listen(process.env.PORT || DefPort, () => {
-      console.log(`Server is running on port ${process.env.PORT || DefPort}`);
+    // Base route
+    app.get('/', (req, res) => {
+      res.status(200).json({ message: 'API is running...' });
+    });
+
+    // User routes
+    app.use('/users', userRouter);
+
+    // Start server
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
     });
   })
   .catch((err) => {
-    // This block will execute if the database connection fails
-    console.log("MongoDB connection failed!!!", err);
+    console.error('MongoDB connection failed:', err);
   });
-
-
-
